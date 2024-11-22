@@ -19,7 +19,7 @@ const novaDivida = {
   arquivo_comprovante: "comprovante.pdf"
 };
 
-//insertDivida(novaDivida);
+insertDivida(novaDivida);
 
 // Listar todas as dividas
 //console.log("Listando todas as dividas:");
@@ -43,4 +43,4 @@ async function delDividaById() {
     let data = await deleteDividaById(id);
     console.log(data);
 }
-delDividaById(1);
+//delDividaById(1);

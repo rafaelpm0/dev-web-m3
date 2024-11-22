@@ -1,14 +1,14 @@
-import sqlite3 from "sqlite3";
+import sqlite3 from 'sqlite3';
 sqlite3.verbose();
 
 // Conectar ao banco de dados SQLite
 function connect() {
   return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database("./database.db", (err) => {
+    const db = new sqlite3.Database('./database.db', (err) => {
       if (err) {
         reject(err);
       } else {
-        console.log("Conectado ao banco de dados SQLite.");
+        console.log('Conectado ao banco de dados SQLite.');
         resolve(db);
       }
     });
@@ -22,7 +22,7 @@ function closeConnection(db) {
       if (err) {
         reject(err);
       } else {
-        console.log("Fechada a conexão com o banco de dados SQLite.");
+        console.log('Fechada a conexão com o banco de dados SQLite.');
         resolve();
       }
     });
@@ -126,7 +126,7 @@ async function deleteDividaById(id) {
       if (err) {
         reject(err);
       } else {
-        resolve({ message: `Divida com ID ${id} deletada`, changes: this.changes });
+        resolve({ changes: this.changes });
       }
     });
   });
