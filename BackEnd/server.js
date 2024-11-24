@@ -7,7 +7,7 @@ const app = express();
 const port = 3000;
 
 app.use(cors({
-  origin: 'http://localhost:3000/dividas'
+  origin: '*'
 }));
 
 app.use(express.json());
