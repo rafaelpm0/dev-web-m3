@@ -1,9 +1,14 @@
 import express from 'express';
+import cors from 'cors';
 import { createDB } from './DB/db.mjs';
 import dividasRouter from './API/Dividas.js';
 
 const app = express();
 const port = 3000;
+
+app.use(cors({
+  origin: 'http://localhost:3000/dividas'
+}));
 
 app.use(express.json());
 
