@@ -23,7 +23,7 @@ router.post('/', upload.single('arquivo_comprovante'), async (req, res) => {
       arquivo_comprovante_name: req.file ? req.file.originalname : null,
     };
     console.log(novaDivida);
-    console.log(req.file.originalname)
+    console.log(req.file)
     const id = await insertDivida(novaDivida);
     res.status(201).json({ id });
   } catch (err) {
@@ -44,7 +44,6 @@ router.get('/', async (req, res) => {
 // Rota para listar uma dívida específica por ID
 router.get('/:id', async (req, res) => {
   try {
-    const id = req.params.id;
     const divida = await getDividasById(id);
     if (divida) {
       res.status(200).json(divida);

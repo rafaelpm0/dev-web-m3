@@ -48,15 +48,30 @@ export async function updateDividaSelect() {
 export function handleChangeDivida(data) {
     console.log(data);
     Object.keys(data).forEach(key => {
-        console.log(key);
         const element = document.getElementById(`data-${key}`);
         if (element) {
             if (element.tagName === "INPUT" || element.tagName === "TEXTAREA" || element.tagName === "SELECT") {
                 element.value = data[key] || "";
-                console.log(element)
+            } else if (element.tagName === "BUTTON" && key === "arquivo_comprovante") {
+                const fileName = data.arquivo_comprovante_name || "comprovante.pdf";
+                const fileContent = data.arquivo_comprovante ? new Uint8Array(data.arquivo_comprovante.data) : null;
+                if (fileContent) {
+                    const blob = new Blob([fileContent], { type: "application/pdf" });
+                    const url = URL.createObjectURL(blob);
+                    element.onclick = () => {
+                        const a = document.createElement("a");
+                        a.href = url;
+                        a.download = fileName;
+                        document.body.appendChild(a);
+                        a.click();
+                        document.body.removeChild(a);
+                        URL.revokeObjectURL(url);
+                    };
+                } else {
+                    element.onclick = null;
+                }
             } else {
-            element.textContent = data[key] || "";
-            console.log(element)
+                element.textContent = data[key] || "";
             }
         }
     });
@@ -124,6 +139,7 @@ export async function deleteDivida() {
         showMessageModal("Erro ao deletar divida");
     }
 }
+
 
 function showMessageModal(message){
     const modal = document.getElementById("modal");

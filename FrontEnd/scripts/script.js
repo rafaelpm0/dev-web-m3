@@ -52,7 +52,7 @@ document.addEventListener("DOMContentLoaded", () => {
     if (select) {
         select.addEventListener("change", async (event) => {
             const id = event.target.value;
-            const dividas = await getDividas();
+            const dividas = await getDividas(); //dava para melhorar e fazer a requisicao direto pelo id 
             const divida = dividas.find((divida) => divida.id == id);
             handleChangeDivida(divida);
         });
@@ -75,4 +75,5 @@ document.addEventListener("DOMContentLoaded", () => {
     } else {
         console.error("Delete button not found");
     }
+
 });
