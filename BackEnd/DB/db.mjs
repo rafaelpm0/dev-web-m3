@@ -45,7 +45,8 @@ async function createDB() {
         descricao TEXT NOT NULL,
         situacao TEXT NOT NULL,
         numero_processo TEXT,
-        arquivo_comprovante TEXT
+        arquivo_comprovante_name TEXT,
+        arquivo_comprovante BLOB
       )`,
       async (err) => {
         await closeConnection(db);
@@ -63,7 +64,7 @@ async function insertDivida(divida) {
   const db = await connect();
   return new Promise((resolve, reject) => {
     db.run(
-      `INSERT INTO dividas (nome_cliente, cpf_cliente, email_cliente, cep, numero, complemento, valor, descricao, situacao, numero_processo, arquivo_comprovante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+      `INSERT INTO dividas (nome_cliente, cpf_cliente, email_cliente, cep, numero, complemento, valor, descricao, situacao, numero_processo, arquivo_comprovante_name, arquivo_comprovante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         divida.nome_cliente,
         divida.cpf_cliente,
@@ -75,6 +76,7 @@ async function insertDivida(divida) {
         divida.descricao,
         divida.situacao,
         divida.numero_processo,
+        divida.arquivo_comprovante_name,
         divida.arquivo_comprovante,
       ],
       async function (err) {

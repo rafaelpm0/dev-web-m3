@@ -2,16 +2,17 @@ export async function getDividas() {
     try{
         const response = await fetch("http://localhost:3000/dividas",{
             method: "GET",
+            headers: {"Content-type": "application/json;charset=UTF-8"}
         });
         if(!response.ok){
-            // colocar modal aqui
+            showMessageModal("Erro de conexão com api");
         }else{
             const data = await response.json();
             return data;
         }
     
     }catch{
-        // colocar modal aqui
+        showMessageModal("Erro de conexão com api");
     }
 }
 
@@ -62,24 +63,66 @@ export function handleChangeDivida(data) {
 }
 
 export async function handleForm(data) {
-    fetch("http://localhost:3000/dividas", {
-        method: "POST",
-        body: JSON.stringify(data),
-    })
-        .then((response) => response.json())
-        .then((data) => {
-            showMessageModal("Divida cadastrada com sucesso!");
-            setTimeout(() => {
-                deactivateModal();
-            }, 3000);
-        })
-        .catch((error) => {
-            showMessageModal("Erro ao cadastrar divida!");
+    const formData = new FormData();
+    formData.append("nome_cliente", data.nome_cliente);
+    formData.append("cpf_cliente", data.cpf_cliente);
+    formData.append("email_cliente", data.email_cliente);
+    formData.append("cep", data.cep);
+    formData.append("numero", data.numero);
+    formData.append("complemento", data.complemento);
+    formData.append("valor", data.valor);
+    formData.append("descricao", data.descricao);
+    formData.append("situacao", data.situacao);
+    formData.append("numero_processo", data.numero_processo);
+    formData.append("arquivo_comprovante", data.arquivo_comprovante);
 
+    console.log([...formData.entries()]); // Para verificar o conteúdo do FormData
+
+    try {
+        const response = await fetch("http://localhost:3000/dividas", {
+            method: "POST",
+            body: formData,
+        });
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
+        const result = await response.json();
+        console.log("Server response:", result);
+        showMessageModal("Divida cadastrada com sucesso!");
+        setTimeout(() => {
+            deactivateModal();
+        }, 3000);
+    } catch (error) {
+        console.error("Error:", error);
+        showMessageModal("Erro ao cadastrar divida!");
+        setTimeout(() => {
+            deactivateModal();
+        }, 3000);
+    }
+}
+
+export async function deleteDivida() {
+    try {
+        const id = document.getElementById("data-numero_divida").value;
+        if (id === "") {
+            showMessageModal("Selecione uma divida para deletar");
+            return;
+        }
+        const response = await fetch(`http://localhost:3000/dividas/${id}`, {
+            method: "DELETE",
+        });
+        if (!response.ok) {
+            showMessageModal("Erro ao deletar divida");
+        } else {
+            showMessageModal("Divida deletada com sucesso");
             setTimeout(() => {
                 deactivateModal();
             }, 3000);
-        });
+        }
+    } catch (error) {
+        console.error("Error:", error);
+        showMessageModal("Erro ao deletar divida");
+    }
 }
 
 function showMessageModal(message){

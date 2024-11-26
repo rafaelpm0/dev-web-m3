@@ -17,7 +17,7 @@
       </div>
     </div>
     <main class="form">
-      <form id="submitForm">
+      <form id="submitForm" method="POST" enctype="multipart/form-data">
         <div class="form-fields">
           <label for="nome_cliente">Nome do Cliente:</label>
           <input type="text" id="nome_cliente" name="nome_cliente" maxlength="100" required />
@@ -64,8 +64,8 @@
           <span class="data-label">Número da Dívida:</span>
           <select id="data-numero_divida" name="data-numero_divida" >
             <option value="" disabled selected>Escolha o processo</option>
-          
           </select>
+          <button id="btn-delete" >Deletar Divida</button>
         </div>
         <div class="data-field">
           <span class="data-label">Nome do Cliente:</span>
