@@ -1,6 +1,6 @@
 export async function getDividas() {
     try{
-        const response = await fetch("http://localhost:3000/dividas",{
+        const response = await fetch("http://localhost:5000/dividas",{
             method: "GET",
             headers: {"Content-type": "application/json;charset=UTF-8"}
         });
@@ -94,7 +94,7 @@ export async function handleForm(data) {
 
 
     try {
-        const response = await fetch("http://localhost:3000/dividas", {
+        const response = await fetch("http://localhost:5000/dividas", {
             method: "POST",
             body: formData,
         });
@@ -114,6 +114,7 @@ export async function handleForm(data) {
             deactivateModal();
         }, 3000);
     }
+    updateDividaSelect()
 }
 
 export async function deleteDivida() {
@@ -123,7 +124,7 @@ export async function deleteDivida() {
             showMessageModal("Selecione uma divida para deletar");
             return;
         }
-        const response = await fetch(`http://localhost:3000/dividas/${id}`, {
+        const response = await fetch(`http://localhost:5000/dividas/${id}`, {
             method: "DELETE",
         });
         if (!response.ok) {
@@ -138,6 +139,7 @@ export async function deleteDivida() {
         console.error("Error:", error);
         showMessageModal("Erro ao deletar divida");
     }
+    updateDividaSelect()
 }
 
 
