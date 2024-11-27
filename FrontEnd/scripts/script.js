@@ -1,13 +1,12 @@
 import { handleForm, updateDividaSelect, handleChangeDivida, getDividas, deleteDivida } from "./handleApi.js";
 
 document.addEventListener("DOMContentLoaded", () => {
-    console.log("DOM fully loaded and parsed");
 
     updateDividaSelect();
 
-    const formulario = document.getElementById("submitForm");
+    const formulario = document.getElementById("button_submit");
     if (formulario) {
-        formulario.addEventListener("submit", async (event) => {
+        formulario.addEventListener("click", async (event) => {
             event.preventDefault();
             event.stopPropagation();
             console.log("Form submit event prevented and propagation stopped");
@@ -38,7 +37,6 @@ document.addEventListener("DOMContentLoaded", () => {
                     numero_processo,
                     arquivo_comprovante,
                 };
-                console.log("Form data:", data);
                 await handleForm(data);
             } catch (error) {
                 console.error("Error during form submission:", error);

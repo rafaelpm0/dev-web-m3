@@ -91,7 +91,7 @@ export async function handleForm(data) {
     formData.append("numero_processo", data.numero_processo);
     formData.append("arquivo_comprovante", data.arquivo_comprovante);
 
-    console.log([...formData.entries()]); // Para verificar o conteúdo do FormData
+
 
     try {
         const response = await fetch("http://localhost:3000/dividas", {
