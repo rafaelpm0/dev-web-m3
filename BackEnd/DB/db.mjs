@@ -2,7 +2,7 @@ import mysql from 'mysql2/promise';
 
 // Configurações de conexão com o banco de dados MySQL
 const dbConfig = {
-  host: 'localhost',
+  host: '127.0.0.1',
   user: 'root',
   password: '1234',
   database: 'baguncinha'
