@@ -1,69 +1,66 @@
-import sqlite3 from 'sqlite3';
-sqlite3.verbose();
+import mysql from 'mysql2/promise';
 
-// Conectar ao banco de dados SQLite
-function connect() {
-  return new Promise((resolve, reject) => {
-    const db = new sqlite3.Database('./database.db', (err) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log('Conectado ao banco de dados SQLite.');
-        resolve(db);
-      }
-    });
-  });
+// Configurações de conexão com o banco de dados MySQL
+const dbConfig = {
+  host: '127.0.0.1',
+  user: 'root',
+  password: '1234',
+  database: 'baguncinha'
+};
+
+// Conectar ao banco de dados MySQL
+async function connect() {
+  try {
+    const connection = await mysql.createConnection(dbConfig);
+    console.log('Conectado ao banco de dados MySQL.');
+    return connection;
+  } catch (err) {
+    throw new Error('Erro ao conectar ao banco de dados MySQL: ' + err.message);
+  }
 }
 
 // Fechar a conexão com o banco de dados
-function closeConnection(db) {
-  return new Promise((resolve, reject) => {
-    db.close((err) => {
-      if (err) {
-        reject(err);
-      } else {
-        console.log('Fechada a conexão com o banco de dados SQLite.');
-        resolve();
-      }
-    });
-  });
+async function closeConnection(connection) {
+  try {
+    await connection.end();
+    console.log('Fechada a conexão com o banco de dados MySQL.');
+  } catch (err) {
+    throw new Error('Erro ao fechar a conexão com o banco de dados MySQL: ' + err.message);
+  }
 }
 
 async function createDB() {
-  const db = await connect();
-  return new Promise((resolve, reject) => {
-    db.run(
+  const connection = await connect();
+  try {
+    await connection.execute(
       `CREATE TABLE IF NOT EXISTS dividas (
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        nome_cliente TEXT NOT NULL,
-        cpf_cliente TEXT NOT NULL,
-        email_cliente TEXT NOT NULL,
-        cep TEXT,
-        numero TEXT,
-        complemento TEXT,
-        valor REAL NOT NULL,
+        id INT AUTO_INCREMENT PRIMARY KEY,
+        nome_cliente VARCHAR(255) NOT NULL,
+        cpf_cliente VARCHAR(14) NOT NULL,
+        email_cliente VARCHAR(255) NOT NULL,
+        cep VARCHAR(10),
+        numero VARCHAR(10),
+        complemento VARCHAR(255),
+        valor DECIMAL(10, 2) NOT NULL,
         descricao TEXT NOT NULL,
-        situacao TEXT NOT NULL,
-        numero_processo TEXT,
-        arquivo_comprovante_name TEXT,
-        arquivo_comprovante BLOB
-      )`,
-      async (err) => {
-        await closeConnection(db);
-        if (err) {
-          reject(err);
-        } else {
-          resolve(true);
-        }
-      }
+        situacao VARCHAR(50) NOT NULL,
+        numero_processo VARCHAR(50),
+        arquivo_comprovante_name VARCHAR(255),
+        arquivo_comprovante LONGBLOB
+      )`
     );
-  });
+    console.log('Tabela "dividas" criada ou já existe.');
+  } catch (err) {
+    throw new Error('Erro ao criar a tabela: ' + err.message);
+  } finally {
+    await closeConnection(connection);
+  }
 }
 
 async function insertDivida(divida) {
-  const db = await connect();
-  return new Promise((resolve, reject) => {
-    db.run(
+  const connection = await connect();
+  try {
+    const [result] = await connection.execute(
       `INSERT INTO dividas (nome_cliente, cpf_cliente, email_cliente, cep, numero, complemento, valor, descricao, situacao, numero_processo, arquivo_comprovante_name, arquivo_comprovante) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
       [
         divida.nome_cliente,
@@ -78,60 +75,51 @@ async function insertDivida(divida) {
         divida.numero_processo,
         divida.arquivo_comprovante_name,
         divida.arquivo_comprovante,
-      ],
-      async function (err) {
-        await closeConnection(db);
-        if (err) {
-          reject(err);
-        } else {
-          console.log(`Nova divida adicionada com o id ${this.lastID}`);
-          resolve(this.lastID);
-        }
-      }
+      ]
     );
-  });
+    console.log(`Nova divida adicionada com o id ${result.insertId}`);
+    return result.insertId;
+  } catch (err) {
+    throw new Error('Erro ao inserir a dívida: ' + err.message);
+  } finally {
+    await closeConnection(connection);
+  }
 }
 
 async function getDividas() {
-  const db = await connect();
-  return new Promise((resolve, reject) => {
-    db.all(`SELECT * FROM dividas`, [], async (err, rows) => {
-      await closeConnection(db);
-      if (err) {
-        reject(err);
-      } else {
-        resolve(rows);
-      }
-    });
-  });
+  const connection = await connect();
+  try {
+    const [rows] = await connection.execute(`SELECT * FROM dividas`);
+    return rows;
+  } catch (err) {
+    throw new Error('Erro ao buscar as dívidas: ' + err.message);
+  } finally {
+    await closeConnection(connection);
+  }
 }
 
 async function getDividasById(id) {
-  const db = await connect();
-  return new Promise((resolve, reject) => {
-    db.get(`SELECT * FROM dividas WHERE id = ?`, [id], async (err, row) => {
-      await closeConnection(db);
-      if (err) {
-        reject(err);
-      } else {
-        resolve(row);
-      }
-    });
-  });
+  const connection = await connect();
+  try {
+    const [rows] = await connection.execute(`SELECT * FROM dividas WHERE id = ?`, [id]);
+    return rows[0];
+  } catch (err) {
+    throw new Error('Erro ao buscar a dívida: ' + err.message);
+  } finally {
+    await closeConnection(connection);
+  }
 }
 
 async function deleteDividaById(id) {
-  const db = await connect();
-  return new Promise((resolve, reject) => {
-    db.run(`DELETE FROM dividas WHERE id = ?`, [id], async function (err) {
-      await closeConnection(db);
-      if (err) {
-        reject(err);
-      } else {
-        resolve({ changes: this.changes });
-      }
-    });
-  });
+  const connection = await connect();
+  try {
+    const [result] = await connection.execute(`DELETE FROM dividas WHERE id = ?`, [id]);
+    return { changes: result.affectedRows };
+  } catch (err) {
+    throw new Error('Erro ao deletar a dívida: ' + err.message);
+  } finally {
+    await closeConnection(connection);
+  }
 }
 
 export { createDB, insertDivida, getDividas, getDividasById, deleteDividaById };
